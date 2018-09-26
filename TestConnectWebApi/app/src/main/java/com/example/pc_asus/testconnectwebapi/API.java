@@ -12,8 +12,9 @@ public interface API {
     @GET("api/values")
         Call<String> getResult();
     @Multipart
-    @POST("api/upload")
+    @POST("api/upload/kpop")
     Call<String> upLoadPhoto(@Part MultipartBody.Part photo);
+
 
 
 }

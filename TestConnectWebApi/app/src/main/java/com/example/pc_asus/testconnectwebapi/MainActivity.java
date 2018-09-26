@@ -2,7 +2,9 @@ package com.example.pc_asus.testconnectwebapi;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.ClipData;
 import android.content.Intent;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
@@ -23,6 +25,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
@@ -41,6 +45,11 @@ public class MainActivity extends AppCompatActivity {
     Call<String> call;
     ImageView img;
     File f;
+
+
+    int PICK_IMAGE_MULTIPLE = 1;
+    String imageEncoded;
+    List<String> imagesEncodedList;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -58,6 +67,11 @@ public class MainActivity extends AppCompatActivity {
                 Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
                 intent.setType("image/*");
                 startActivityForResult(intent, 1);
+//                Intent intent = new Intent();
+//                intent.setType("image/*");
+//                intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
+//                intent.setAction(Intent.ACTION_GET_CONTENT);
+//                startActivityForResult(Intent.createChooser(intent,"Select Picture"), PICK_IMAGE_MULTIPLE);
             }
         });
 
@@ -149,13 +163,13 @@ public class MainActivity extends AppCompatActivity {
                 call.enqueue(new Callback<String>() {
                     @Override
                     public void onResponse(Call<String> call, Response<String> response) {
-                        Toast.makeText(MainActivity.this, response.body(), Toast.LENGTH_SHORT).show();
-                        Log.e("abc"," "+response.toString());
+                        Toast.makeText(MainActivity.this,"result= "+ response.body(), Toast.LENGTH_SHORT).show();
+                        Log.e("abc","result="+response.body());
                     }
 
                     @Override
                     public void onFailure(Call<String> call, Throwable t) {
-                        Log.e("abc","lỗi "+call+" "+t);
+                        Log.e("abc","lỗi ");
                         Toast.makeText(MainActivity.this, "Lỗi", Toast.LENGTH_SHORT).show();
                     }
                 });
@@ -205,13 +219,62 @@ public class MainActivity extends AppCompatActivity {
                 e.printStackTrace();
             }
 
-        }else if (requestCode == 2 && resultCode == Activity.RESULT_OK && data!=null) {       //camera
+        }
+                else if (requestCode == 2 && resultCode == Activity.RESULT_OK && data!=null) {       //camera
             Bitmap bitmap= (Bitmap) data.getExtras().get("data");
             img.setImageBitmap(bitmap);
 
              f=convertBitmapToFile(bitmap);
             Log.e("abc","path "+f.getAbsolutePath());
         }
+
+            // When an Image is picked
+//            if (requestCode == PICK_IMAGE_MULTIPLE && resultCode == RESULT_OK && null != data) {
+//                // Get the Image from data
+//
+//                String[] filePathColumn = { MediaStore.Images.Media.DATA };
+//                imagesEncodedList = new ArrayList<String>();
+//                if(data.getData()!=null){
+//
+//                    Uri mImageUri=data.getData();
+//
+//                    // Get the cursor
+//                    Cursor cursor = getContentResolver().query(mImageUri,
+//                            filePathColumn, null, null, null);
+//                    // Move to first row
+//                    cursor.moveToFirst();
+//
+//                    int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
+//                    imageEncoded  = cursor.getString(columnIndex);
+//                    cursor.close();
+//
+//                } else {
+//                    if (data.getClipData() != null) {
+//                        ClipData mClipData = data.getClipData();
+//                        ArrayList<Uri> mArrayUri = new ArrayList<Uri>();
+//                        for (int i = 0; i < mClipData.getItemCount(); i++) {
+//
+//                            ClipData.Item item = mClipData.getItemAt(i);
+//                            Uri uri = item.getUri();
+//                            mArrayUri.add(uri);
+//                            // Get the cursor
+//                            Cursor cursor = getContentResolver().query(uri, filePathColumn, null, null, null);
+//                            // Move to first row
+//                            cursor.moveToFirst();
+//
+//                            int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
+//                            imageEncoded  = cursor.getString(columnIndex);
+//                            imagesEncodedList.add(imageEncoded);
+//                            cursor.close();
+//
+//                        }
+//                        Log.v("LOG_TAG", "Selected Images" + mArrayUri.size());
+//                    }
+//                }
+//
+//
+//        }
+
     }
 
     private File convertBitmapToFile(Bitmap bitmap) {

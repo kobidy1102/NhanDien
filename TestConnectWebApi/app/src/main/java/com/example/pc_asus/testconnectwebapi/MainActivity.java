@@ -96,8 +96,8 @@ public class MainActivity extends AppCompatActivity {
 
 
 
-        Button btn= findViewById(R.id.button);
-        btn.setOnClickListener(new View.OnClickListener() {
+        Button btn_getData= findViewById(R.id.button);
+        btn_getData.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
@@ -158,7 +158,7 @@ public class MainActivity extends AppCompatActivity {
                         .build();
                 API api= retrofit.create(API.class);
 
-                call= api.upLoadPhoto(body);
+                call= api.recognitionFace(body);
 
                 call.enqueue(new Callback<String>() {
                     @Override
@@ -173,6 +173,19 @@ public class MainActivity extends AppCompatActivity {
                         Toast.makeText(MainActivity.this, "Lỗi", Toast.LENGTH_SHORT).show();
                     }
                 });
+            }
+        });
+
+
+
+
+
+
+        Button btnTrain= findViewById(R.id.btn_training);
+        btnTrain.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(MainActivity.this, TrainingActivity.class));
             }
         });
 
@@ -205,7 +218,7 @@ public class MainActivity extends AppCompatActivity {
                 return;
             }
             try {
-                Uri uri= data.getData();
+              //  Uri uri= data.getData();
                 InputStream inputStream = MainActivity.this.getContentResolver().openInputStream(data.getData());
                 Bitmap bitmap= BitmapFactory.decodeStream(inputStream);
                 img.setImageBitmap(bitmap);

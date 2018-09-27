@@ -17,7 +17,7 @@ namespace router.Controllers
     public class ValuesController : ApiController
     {
         string kq = "Nguyễn Thanh Huy";
-        FaceServiceClient faceServiceClient = new FaceServiceClient("ec076dfe8cf14f38b4b1860d07e65e32", "https://westcentralus.api.cognitive.microsoft.com/face/v1.0/");
+        FaceServiceClient faceServiceClient = new FaceServiceClient("5243a5f84e4645579af545b9cba4c496", "https://westcentralus.api.cognitive.microsoft.com/face/v1.0");
 
         // GET api/values
         //public IEnumerable<string> Get()
@@ -55,7 +55,7 @@ namespace router.Controllers
 
 
 
-        [HttpPost, Route("api/upload/{personGroup}")]
+        [HttpPost, Route("api/recognition/{personGroup}")]
         public async Task<String> IdentityFaceByImage(string personGroup)
 
         {
@@ -72,6 +72,43 @@ namespace router.Controllers
             return result;
 
         }
+
+
+        [HttpPost, Route("api/addPersonToGroup/{personGroup}/{name}")]
+        public async Task<String> Training(string personGroup, string name)
+
+        {
+            String result = "Co loi trong upload anh!";
+            var httpRequest = HttpContext.Current.Request;
+
+            if (httpRequest.Files.Count == 1)
+            {
+                var postedFile = httpRequest.Files[0];
+                Stream file_stream = postedFile.InputStream;
+                result = await AddPersonToGroup(personGroup, name, file_stream); 
+            }
+
+            return result;
+
+        }
+
+
+
+
+        [HttpPost, Route("api/trainingAI/{personGroup}")]
+        public async Task<String> TrainAI(string personGroup)
+
+        {
+            String result = "Loi training";
+            result = await TrainingAI(personGroup);
+        
+            return result;
+
+        }
+
+
+
+
 
 
         // POST api/values
@@ -108,33 +145,41 @@ namespace router.Controllers
                 Console.WriteLine("Error Create Person Group\n" + ex.Message);
             }
         }
-        private async void AddPersonToGroup(String personGroupId, string Name, string pathImage)
+
+
+
+        public async Task<string> AddPersonToGroup(string personGroupId, string Name, Stream s)
         {
             try
             {
                 await faceServiceClient.GetPersonGroupAsync(personGroupId);
                 CreatePersonResult person = await faceServiceClient.CreatePersonAsync(personGroupId, Name);
-                DetectFaceAndRegiter(personGroupId, person, pathImage);
-                Console.WriteLine("add " + Name);
+              //  DetectFaceAndRegiter(personGroupId, person, pathImage);
+                await faceServiceClient.AddPersonFaceAsync(personGroupId, person.PersonId, s);
+              //  Console.WriteLine("add " + Name);
+                return "Da luu";
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Error Add Person To Group\n" + ex.Message);
+                //Console.WriteLine("Error Add Person To Group\n" + ex.Message);
+                return "co loi xay ra";
             }
+
+            
         }
 
         private async void DetectFaceAndRegiter(string personGroupId, CreatePersonResult person, string pathImage)
         {
-            foreach (var imgPath in Directory.GetFiles(pathImage, "*.jpg"))
-            {
-                using (Stream s = File.OpenRead(imgPath))
+          //  foreach (var imgPath in Directory.GetFiles(pathImage, "*.jpg"))
+         //   {
+                using (Stream s = File.OpenRead(pathImage))
                 {
                     await faceServiceClient.AddPersonFaceAsync(personGroupId, person.PersonId, s);
                 }
-            }
+         //   }
         }
 
-        public async void TrainingAI(string personGroupId)
+        public async Task<string> TrainingAI(string personGroupId)
         {
             await faceServiceClient.TrainPersonGroupAsync(personGroupId);
             TrainingStatus trainingStatus = null;
@@ -146,7 +191,7 @@ namespace router.Controllers
                 await Task.Delay(1000);
 
             }
-            Console.WriteLine("Training AI complete");
+            return "Training complete";
 
         }
 

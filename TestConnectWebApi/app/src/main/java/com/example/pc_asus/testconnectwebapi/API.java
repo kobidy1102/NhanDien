@@ -14,14 +14,25 @@ public interface API {
     String personName="";
     @GET("api/values")
         Call<String> getResult();
-    @Multipart
-    @POST("api/recognition/kpop")
-    Call<String> recognitionFace(@Part MultipartBody.Part photo);
 
     @Multipart
-    @POST("api/addPersonToGroup/kpop/{personName}")
-    Call<String> addFace(@Path("personName") String personName, @Part MultipartBody.Part photo);
+    @POST("api/recognition/{personGroup}")
+    Call<String> recognitionFace(@Path("personGroup") String personGroup, @Part MultipartBody.Part photo);
+
+    @POST("api/addPersonToGroup/{personGroup}/{personName}")
+    Call<String> addPersontoGroup(@Path("personGroup") String personGroup, @Path("personName") String personName);
+
+    @Multipart
+    @POST("api/addFaceToPerson/{personGroup}/{personId}")
+    Call<String> addFaceToPerson(@Path("personGroup") String personGroup, @Path("personId") String personID, @Part MultipartBody.Part photo);
 
     @POST("api/trainingAI/{personGroup}")
-    Call<String> trainingFace(@Path("personGroup") String personGroup);
+    Call<String> trainingPerson(@Path("personGroup") String personGroup);
+
+    @POST("api/deletePerson/{personGroup}/{personId}")
+    Call<String> deletePerson(@Path("personGroup") String personGroup, @Path("personId") String personId);
+
+    @POST("api/createPersonGroup/{personGroup}/{personGroupName}")
+    Call<String> createPersonGroup(@Path("personGroup") String personGroup, @Path("personGroupName") String personGroupName);
+
 }

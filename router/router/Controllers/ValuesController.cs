@@ -25,41 +25,54 @@ namespace router.Controllers
         //    return new string[] { "value1", "value2" };
         //}
 
-        public async Task <string> Get()
-        {
-            //var result = await RecognitionFaceImgPath("kpop", @"D:\test\gd.jpg");
-            // string i = Test();
-            return "";
-        }
+        //public async Task<string> Get()
+        //{
+        //    //var result = await RecognitionFaceImgPath("kpop", @"D:\test\gd.jpg");
+        //    // string i = Test();
+        //    return "";
+        //}
 
 
-        // GET api/values/5
-        public string Get(int id)
-        {
-            return "value";
-        }
+        //// GET api/values/5
+        //public string Get(int id)
+        //{
+        //    return "value";
+        //}
 
-        [Route("customers={customerId}")]
-        public string Get(string customerId)
-        {
-            return customerId;
-        }
-        [HttpPost]
-        [Route("data={data}")]
-        public string postdata(string data)
-        {
-            return data;
-        }
+        //[Route("customers={customerId}")]
+        //public string Get(string customerId)
+        //{
+        //    return customerId;
+        //}
+        //[HttpPost]
+        //[Route("data={data}")]
+        //public string postdata(string data)
+        //{
+        //    return data;
+        //}
 
+        // POST api/values
+        //public void Post([FromBody]string value)
+        //{
+        //}
 
+        //// PUT api/values/5
+        //public void Put(int id, [FromBody]string value)
+        //{
+        //}
+
+        //// DELETE api/values/5
+        //public void Delete(int id)
+        //{
+        //}
 
 
 
         [HttpPost, Route("api/recognition/{personGroup}")]
-        public async Task<String> IdentityFaceByImage(string personGroup)
+        public async Task<String> recognition(string personGroup)
 
         {
-            String result = "Co loi trong upload anh!";
+            string result = "Có lỗi khi upload ảnh ";
             var httpRequest = HttpContext.Current.Request;
 
             if (httpRequest.Files.Count == 1)
@@ -68,24 +81,36 @@ namespace router.Controllers
                 Stream file_stream = postedFile.InputStream;
                 result = await RecognitionFaceImgPath(personGroup, file_stream);
             }
-            
+
             return result;
 
         }
 
 
         [HttpPost, Route("api/addPersonToGroup/{personGroup}/{name}")]
-        public async Task<String> Training(string personGroup, string name)
+        public async Task<String> addPersonToGroup(string personGroup, string name)
 
         {
-            String result = "Co loi trong upload anh!";
+            string result = ".";
+            result = await AddPersonToGroup(personGroup, name);
+            return result;
+
+        }
+
+
+
+        [HttpPost, Route("api/addFaceToPerson/{personGroup}/{name}")]
+        public async Task<String> addFaceToPerson(string personGroup, string name)
+
+        {
+            String result = "Có lỗi khi upload ảnh ";
             var httpRequest = HttpContext.Current.Request;
 
             if (httpRequest.Files.Count == 1)
             {
                 var postedFile = httpRequest.Files[0];
                 Stream file_stream = postedFile.InputStream;
-                result = await AddPersonToGroup(personGroup, name, file_stream); 
+                result = await AddFaceToPerson(personGroup, name, file_stream);
             }
 
             return result;
@@ -96,40 +121,38 @@ namespace router.Controllers
 
 
         [HttpPost, Route("api/trainingAI/{personGroup}")]
-        public async Task<String> TrainAI(string personGroup)
+        public async Task<String> trainingAI(string personGroup)
 
         {
-            String result = "Loi training";
+            string result = "Training error ";
             result = await TrainingAI(personGroup);
-        
+
+            return result;
+
+        }
+
+
+        [HttpPost, Route("api/deletePerson/{personGroup}/{personId}")]
+        public async Task<String> deletePersonRouter(string personGroup, string personId)
+
+        {
+            string result = "Training error ";
+            result = await deletePerson(personGroup,personId);
+
             return result;
 
         }
 
 
 
-
-
-
-        // POST api/values
-        public void Post([FromBody]string value)
-        {
-        }
-
-        // PUT api/values/5
-        public void Put(int id, [FromBody]string value)
-        {
-        }
-
-        // DELETE api/values/5
-        public void Delete(int id)
-        {
-        }
+     
 
 
 
 
-
+        /////////
+        ////////
+        ////////
 
 
         private async void CreatePersonGroup(String personGroupId, string personGroupName)
@@ -148,36 +171,37 @@ namespace router.Controllers
 
 
 
-        public async Task<string> AddPersonToGroup(string personGroupId, string Name, Stream s)
+        public async Task<string> AddPersonToGroup(string personGroupId, string Name)
         {
             try
             {
                 await faceServiceClient.GetPersonGroupAsync(personGroupId);
                 CreatePersonResult person = await faceServiceClient.CreatePersonAsync(personGroupId, Name);
-              //  DetectFaceAndRegiter(personGroupId, person, pathImage);
-                await faceServiceClient.AddPersonFaceAsync(personGroupId, person.PersonId, s);
-              //  Console.WriteLine("add " + Name);
-                return "Da luu";
+                //  await faceServiceClient.AddPersonFaceAsync(personGroupId, person.PersonId, s);
+                return ""+person.PersonId;
             }
             catch (Exception ex)
             {
-                //Console.WriteLine("Error Add Person To Group\n" + ex.Message);
-                return "co loi xay ra";
+                return "Add person error";
             }
 
-            
+
         }
 
-        private async void DetectFaceAndRegiter(string personGroupId, CreatePersonResult person, string pathImage)
+        private async Task<string> AddFaceToPerson(string personGroupId, string strPersonId, Stream s)
         {
-          //  foreach (var imgPath in Directory.GetFiles(pathImage, "*.jpg"))
-         //   {
-                using (Stream s = File.OpenRead(pathImage))
-                {
-                    await faceServiceClient.AddPersonFaceAsync(personGroupId, person.PersonId, s);
-                }
-         //   }
+            try
+            {
+                Guid personId = new Guid(strPersonId);
+                await faceServiceClient.AddPersonFaceAsync(personGroupId, personId, s);
+                return "Add image";
+            }
+            catch (Exception ex)
+            {
+                return "Add image error";
+            }
         }
+
 
         public async Task<string> TrainingAI(string personGroupId)
         {
@@ -195,41 +219,12 @@ namespace router.Controllers
 
         }
 
-        public async Task<string> RecognitionFace(string personGroupId, Stream s)
-        {
-            var faces = await faceServiceClient.DetectAsync(s);
-            var faceIds = faces.Select(face => face.FaceId).ToArray();
-            try
-            {
-                var results = await faceServiceClient.IdentifyAsync(personGroupId, faceIds);
-                foreach (var identifyResult in results)
-                {
-                    // Console.WriteLine(string.Format("Result of face: {0} ", identifyResult.FaceId));
-                    if (identifyResult.Candidates.Length == 0)
-                    {
-                        // Console.WriteLine("No one indentify");
-                        kq = "No one indentify";
-                    }
-                    else
-                    {
-                        var candidateId = identifyResult.Candidates[0].PersonId;
-                        var person = await faceServiceClient.GetPersonAsync(personGroupId, candidateId);
-                        // Console.WriteLine(string.Format("Identified as: {0}", person.Name));
-                        kq = string.Format("Identified as: {0}", person.Name);
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                // Console.WriteLine("Error Recognition Face" + ex.Message);
-                kq = "Error Recognition Face" + ex;
-            }
 
-            return kq;
-        }
 
         public async Task<string> RecognitionFaceImgPath(string personGroupId, Stream stream)
         {
+
+            string kq="";
             var faces = await faceServiceClient.DetectAsync(stream);
             var faceIds = faces.Select(face => face.FaceId).ToArray();
             try
@@ -239,72 +234,90 @@ namespace router.Controllers
                 {
                     if (identifyResult.Candidates.Length == 0)
                     {
-                        kq = "Không nhận diện được";
+                        kq = kq+" Không nhận diện được \n";
                     }
                     else
                     {
                         var candidateId = identifyResult.Candidates[0].PersonId;
-                        double rate= identifyResult.Candidates[0].Confidence;
-                  
+                        double rate = identifyResult.Candidates[0].Confidence;
+                        rate = rate * 100;
+
                         var person = await faceServiceClient.GetPersonAsync(personGroupId, candidateId);
-                        kq = string.Format("{0}", person.Name+"."+rate);
+                        kq = kq+ string.Format("{0}", person.Name + " - " + rate+"% \n ");
                     }
                 }
             }
             catch (Exception ex)
             {
                 // Console.WriteLine("Error Recognition Face" + ex.Message);
-                kq = "Không có khuôn mặt nào được phát hiện";
+                kq = kq+" Không có khuôn mặt nào được phát hiện \n";
             }
 
             return kq;
         }
 
-        public async void deletePersonGroup(string personGroupId)
+        public async Task<string> deletePersonGroup(string personGroupId)
         {
             try
             {
+
                 await faceServiceClient.DeletePersonGroupAsync(personGroupId);
-                Console.WriteLine("Deleted personGroup ");
+                return "Deleted personGroup ";
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Delete error" + ex.Message);
+                return "Delete error";
             }
         }
 
 
 
 
-
-
-
-
-
-    }
-}
-
-
-
-
-namespace UploadFile.Custom
-{
-    public class CustomUploadMultipartFormProvider : MultipartFormDataStreamProvider
-    {
-        public CustomUploadMultipartFormProvider(string path) : base(path) { }
-
-        public override string GetLocalFileName(HttpContentHeaders headers)
+        public async Task<string> deletePerson(string personGroupId, string personId)
         {
-            if (headers != null && headers.ContentDisposition != null)
+            try
             {
-                return headers
-                    .ContentDisposition
-                    .FileName.TrimEnd('"').TrimStart('"');
+                Guid g = new Guid(personId);
+                await faceServiceClient.DeletePersonFromPersonGroupAsync(personGroupId, g);
+                return "Deleted person";
+            }
+            catch (Exception ex)
+            {
+                return "Delete error";
             }
 
-            return base.GetLocalFileName(headers);
+
+
+
+
+
+
+
         }
+    }
 
 
+
+
+    namespace UploadFile.Custom
+    {
+        public class CustomUploadMultipartFormProvider : MultipartFormDataStreamProvider
+        {
+            public CustomUploadMultipartFormProvider(string path) : base(path) { }
+
+            public override string GetLocalFileName(HttpContentHeaders headers)
+            {
+                if (headers != null && headers.ContentDisposition != null)
+                {
+                    return headers
+                        .ContentDisposition
+                        .FileName.TrimEnd('"').TrimStart('"');
+                }
+
+                return base.GetLocalFileName(headers);
+            }
+
+
+        }
     }
 }

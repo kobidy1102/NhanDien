@@ -107,7 +107,7 @@ public class TrainingActivity extends AppCompatActivity {
                     Toast.makeText(TrainingActivity.this, "Bạn chưa nhập tên", Toast.LENGTH_SHORT).show();
                 }else {
                     dialog.show();
-                    addFaceOfPerson();
+                    addPersontoGroup();
                 }
 
             }
@@ -121,48 +121,42 @@ public class TrainingActivity extends AppCompatActivity {
 
 
 
-             Button btn_train= findViewById(R.id.btn_train);
-             btn_train.setOnClickListener(new View.OnClickListener() {
-                 @Override
-                 public void onClick(View v) {
-
-                     retrofit = new Retrofit.Builder()
-                             .baseUrl(API.Base_URL)
-                             .addConverterFactory(GsonConverterFactory.create())
-                             .build();
-
-                      api= retrofit.create(API.class);
-                     // api.personName=edt_name.getText().toString().trim();
-
-                     call= api.trainingFace("kpop");
-
-                     call.enqueue(new Callback<String>() {
-                         @Override
-                         public void onResponse(Call<String> call, Response<String> response) {
-                             Toast.makeText(TrainingActivity.this,"result= "+ response.body(), Toast.LENGTH_SHORT).show();
-                             Log.e("abc","result="+response.body());
-
-
-                         }
-
-                         @Override
-                         public void onFailure(Call<String> call, Throwable t) {
-                             Log.e("abc","lỗi ");
-                             Toast.makeText(TrainingActivity.this, "Lỗi", Toast.LENGTH_SHORT).show();
-                         }
-                     });
-
-
-                 }
-             });
-
 
     }
 
 
 
-    private  void addFaceOfPerson(){
+    private  void addPersontoGroup(){
 
+
+        retrofit = new Retrofit.Builder()
+                .baseUrl(API.Base_URL)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+
+        final API api = retrofit.create(API.class);
+
+        call = api.addPersontoGroup("kpop",edt_name.getText().toString().trim());
+
+        call.enqueue(new Callback<String>() {
+            @Override
+            public void onResponse(Call<String> call, Response<String> response) {
+
+                Toast.makeText(TrainingActivity.this, "Add person complete: "+response.body(), Toast.LENGTH_SHORT).show();
+                Log.e("abc", "result=" + response.body());
+
+                    addFaceToPerson(response.body());
+            }
+
+            @Override
+            public void onFailure(Call<String> call, Throwable t) {
+                Log.e("abc", "lỗi ");
+                Toast.makeText(TrainingActivity.this, "Lỗi", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private  void addFaceToPerson(final String personId){
 
         mfile = convertBitmapToFile(arrBitMapImage.get(i));
         RequestBody requestBody = RequestBody.create(MediaType.parse("multipart/form-data"), mfile);
@@ -175,19 +169,19 @@ public class TrainingActivity extends AppCompatActivity {
 
         final API api = retrofit.create(API.class);
 
-        call = api.addFace(edt_name.getText().toString().trim(), body);
+        call = api.addFaceToPerson("kpop",personId,body);
 
         call.enqueue(new Callback<String>() {
             @Override
             public void onResponse(Call<String> call, Response<String> response) {
 
-                Toast.makeText(TrainingActivity.this, response.body() + " hình "+i, Toast.LENGTH_SHORT).show();
+                Toast.makeText(TrainingActivity.this, response.body() + " "+i, Toast.LENGTH_SHORT).show();
                 Log.e("abc", "result=" + response.body());
 
 
                 i++;
                 if(i<arrBitMapImage.size()) {
-                    addFaceOfPerson();
+                    addFaceToPerson(personId);
                 }else{
                     trainingPerson();
                 }
@@ -203,8 +197,6 @@ public class TrainingActivity extends AppCompatActivity {
     }
 
 
-
-
     private void trainingPerson(){
 
         retrofit = new Retrofit.Builder()
@@ -215,7 +207,7 @@ public class TrainingActivity extends AppCompatActivity {
         api= retrofit.create(API.class);
         // api.personName=edt_name.getText().toString().trim();
 
-        call= api.trainingFace("kpop");
+        call= api.trainingPerson("kpop");
 
         call.enqueue(new Callback<String>() {
             @Override
@@ -231,6 +223,7 @@ public class TrainingActivity extends AppCompatActivity {
             public void onFailure(Call<String> call, Throwable t) {
                 Log.e("abc","lỗi ");
                 Toast.makeText(TrainingActivity.this, "Lỗi", Toast.LENGTH_SHORT).show();
+                dialog.dismiss();
             }
         });
     }

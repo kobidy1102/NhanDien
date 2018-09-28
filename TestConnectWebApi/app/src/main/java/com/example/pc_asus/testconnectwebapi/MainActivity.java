@@ -68,13 +68,9 @@ public class MainActivity extends AppCompatActivity {
                 Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
                 intent.setType("image/*");
                 startActivityForResult(intent, 1);
-//                Intent intent = new Intent();
-//                intent.setType("image/*");
-//                intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
-//                intent.setAction(Intent.ACTION_GET_CONTENT);
-//                startActivityForResult(Intent.createChooser(intent,"Select Picture"), PICK_IMAGE_MULTIPLE);
             }
         });
+
 
         btn_camera.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -85,61 +81,6 @@ public class MainActivity extends AppCompatActivity {
         });
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-        Button btn_getData= findViewById(R.id.button);
-        btn_getData.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                retrofit = new Retrofit.Builder()
-                        .baseUrl(API.Base_URL)
-                        .addConverterFactory(GsonConverterFactory.create())
-                        .build();
-
-                API api= retrofit.create(API.class);
-
-                call= api.getResult();
-
-
-      //          new ReadData().execute();
-
-//                try {
-//                    String result = call.execute().body();
-//                    Log.e("abc", result);
-//
-//                } catch (IOException e) {
-//                    e.printStackTrace();
-//                }
-
-
-
-                call.enqueue(new Callback<String>() {
-                    @Override
-                    public void onResponse(Call<String> call, Response<String> response) {
-                        Toast.makeText(MainActivity.this, response.body(), Toast.LENGTH_SHORT).show();
-                        Log.e("abc"," . "+response.toString()+"-"+ response.body());
-                    }
-
-                    @Override
-                    public void onFailure(Call<String> call, Throwable t) {
-                        Log.e("abc","lỗi "+call+" "+t);
-                        Toast.makeText(MainActivity.this, "Lỗi", Toast.LENGTH_SHORT).show();
-                    }
-                });
-
-            }
-        });
 
 
 
@@ -163,7 +104,7 @@ public class MainActivity extends AppCompatActivity {
                         .build();
                 API api= retrofit.create(API.class);
 
-                call= api.recognitionFace(body);
+                call= api.recognitionFace("kpop",body);
 
                 call.enqueue(new Callback<String>() {
                     @Override
@@ -247,52 +188,6 @@ public class MainActivity extends AppCompatActivity {
             Log.e("abc","path "+f.getAbsolutePath());
         }
 
-            // When an Image is picked
-//            if (requestCode == PICK_IMAGE_MULTIPLE && resultCode == RESULT_OK && null != data) {
-//                // Get the Image from data
-//
-//                String[] filePathColumn = { MediaStore.Images.Media.DATA };
-//                imagesEncodedList = new ArrayList<String>();
-//                if(data.getData()!=null){
-//
-//                    Uri mImageUri=data.getData();
-//
-//                    // Get the cursor
-//                    Cursor cursor = getContentResolver().query(mImageUri,
-//                            filePathColumn, null, null, null);
-//                    // Move to first row
-//                    cursor.moveToFirst();
-//
-//                    int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
-//                    imageEncoded  = cursor.getString(columnIndex);
-//                    cursor.close();
-//
-//                } else {
-//                    if (data.getClipData() != null) {
-//                        ClipData mClipData = data.getClipData();
-//                        ArrayList<Uri> mArrayUri = new ArrayList<Uri>();
-//                        for (int i = 0; i < mClipData.getItemCount(); i++) {
-//
-//                            ClipData.Item item = mClipData.getItemAt(i);
-//                            Uri uri = item.getUri();
-//                            mArrayUri.add(uri);
-//                            // Get the cursor
-//                            Cursor cursor = getContentResolver().query(uri, filePathColumn, null, null, null);
-//                            // Move to first row
-//                            cursor.moveToFirst();
-//
-//                            int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
-//                            imageEncoded  = cursor.getString(columnIndex);
-//                            imagesEncodedList.add(imageEncoded);
-//                            cursor.close();
-//
-//                        }
-//                        Log.v("LOG_TAG", "Selected Images" + mArrayUri.size());
-//                    }
-//                }
-//
-//
-//        }
 
     }
 

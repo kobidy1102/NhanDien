@@ -244,8 +244,10 @@ namespace router.Controllers
                     else
                     {
                         var candidateId = identifyResult.Candidates[0].PersonId;
+                        double rate= identifyResult.Candidates[0].Confidence;
+                  
                         var person = await faceServiceClient.GetPersonAsync(personGroupId, candidateId);
-                        kq = string.Format("{0}", person.Name);
+                        kq = string.Format("{0}", person.Name+"."+rate);
                     }
                 }
             }

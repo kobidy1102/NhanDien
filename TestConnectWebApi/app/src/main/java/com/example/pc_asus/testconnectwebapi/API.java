@@ -22,6 +22,6 @@ public interface API {
     @POST("api/addPersonToGroup/kpop/{personName}")
     Call<String> addFace(@Path("personName") String personName, @Part MultipartBody.Part photo);
 
-    @POST("api/addPersonToGroup/kpop/{personName}")
-    Call<String> trainingFace(@Path("personName") String personName);
+    @POST("api/trainingAI/{personGroup}")
+    Call<String> trainingFace(@Path("personGroup") String personGroup);
 }

@@ -1,6 +1,7 @@
 package com.example.pc_asus.testconnectwebapi;
 
 import android.Manifest;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
@@ -55,16 +56,17 @@ public class TrainingActivity extends AppCompatActivity {
     private Retrofit retrofit;
     Call<String> call;
     File mfile;
-    List<File> arrFileImage= new ArrayList<File>();
-    File imageFile ;
-
+     EditText edt_name;
+     int i=0;
+    private ProgressDialog dialog;
+     API api;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_training);
 
         ImageView btn_addImage= findViewById(R.id.img_train_addImage);
-        final EditText edt_name= findViewById(R.id.edt_train_name);
+        edt_name= findViewById(R.id.edt_train_name);
 
         btn_addImage.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -80,7 +82,7 @@ public class TrainingActivity extends AppCompatActivity {
                     Matisse.from(TrainingActivity.this)
                             .choose(MimeType.ofImage())
                             .countable(true)
-                            .maxSelectable(9)
+                            .maxSelectable(10)
                             .gridExpectedSize(getResources().getDimensionPixelSize(R.dimen.grid_expected_size))
                             .restrictOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED)
                             .thumbnailScale(0.85f)
@@ -94,40 +96,19 @@ public class TrainingActivity extends AppCompatActivity {
         });
 
 
-
+        dialog= new ProgressDialog(this);
+            dialog.setMessage("         please wait...");
         Button btnSave = findViewById(R.id.btn_train_save);
         btnSave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
-                RequestBody requestBody= RequestBody.create(MediaType.parse("multipart/form-data"),mfile);
-                final MultipartBody.Part body= MultipartBody.Part.createFormData("upload_image","/data/test.jpg",requestBody);
-
-                retrofit = new Retrofit.Builder()
-                        .baseUrl(API.Base_URL)
-                        .addConverterFactory(GsonConverterFactory.create())
-                        .build();
-
-                final API api= retrofit.create(API.class);
-               // api.personName=edt_name.getText().toString().trim();
-
-                call= api.addFace(edt_name.getText().toString().trim(),body);
-
-                call.enqueue(new Callback<String>() {
-                    @Override
-                    public void onResponse(Call<String> call, Response<String> response) {
-                        Toast.makeText(TrainingActivity.this,"result= "+ response.body(), Toast.LENGTH_SHORT).show();
-                        Log.e("abc","result="+response.body());
-
-
-                    }
-
-                    @Override
-                    public void onFailure(Call<String> call, Throwable t) {
-                        Log.e("abc","lỗi ");
-                        Toast.makeText(TrainingActivity.this, "Lỗi", Toast.LENGTH_SHORT).show();
-                    }
-                });
+                if(edt_name.getText().toString().trim().isEmpty()){
+                    Toast.makeText(TrainingActivity.this, "Bạn chưa nhập tên", Toast.LENGTH_SHORT).show();
+                }else {
+                    dialog.show();
+                    addFaceOfPerson();
+                }
 
             }
         });
@@ -150,10 +131,10 @@ public class TrainingActivity extends AppCompatActivity {
                              .addConverterFactory(GsonConverterFactory.create())
                              .build();
 
-                     final API api= retrofit.create(API.class);
+                      api= retrofit.create(API.class);
                      // api.personName=edt_name.getText().toString().trim();
 
-                     call= api.trainingFace(edt_name.getText().toString().trim());
+                     call= api.trainingFace("kpop");
 
                      call.enqueue(new Callback<String>() {
                          @Override
@@ -180,6 +161,81 @@ public class TrainingActivity extends AppCompatActivity {
 
 
 
+    private  void addFaceOfPerson(){
+
+
+        mfile = convertBitmapToFile(arrBitMapImage.get(i));
+        RequestBody requestBody = RequestBody.create(MediaType.parse("multipart/form-data"), mfile);
+        final MultipartBody.Part body = MultipartBody.Part.createFormData("upload_image", "/data/test.jpg", requestBody);
+
+        retrofit = new Retrofit.Builder()
+                .baseUrl(API.Base_URL)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+
+        final API api = retrofit.create(API.class);
+
+        call = api.addFace(edt_name.getText().toString().trim(), body);
+
+        call.enqueue(new Callback<String>() {
+            @Override
+            public void onResponse(Call<String> call, Response<String> response) {
+
+                Toast.makeText(TrainingActivity.this, response.body() + " hình "+i, Toast.LENGTH_SHORT).show();
+                Log.e("abc", "result=" + response.body());
+
+
+                i++;
+                if(i<arrBitMapImage.size()) {
+                    addFaceOfPerson();
+                }else{
+                    trainingPerson();
+                }
+
+            }
+
+            @Override
+            public void onFailure(Call<String> call, Throwable t) {
+                Log.e("abc", "lỗi ");
+                Toast.makeText(TrainingActivity.this, "Lỗi", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+
+
+
+    private void trainingPerson(){
+
+        retrofit = new Retrofit.Builder()
+                .baseUrl(API.Base_URL)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+
+        api= retrofit.create(API.class);
+        // api.personName=edt_name.getText().toString().trim();
+
+        call= api.trainingFace("kpop");
+
+        call.enqueue(new Callback<String>() {
+            @Override
+            public void onResponse(Call<String> call, Response<String> response) {
+                Toast.makeText(TrainingActivity.this, response.body(), Toast.LENGTH_SHORT).show();
+                Log.e("abc","result="+response.body());
+                dialog.dismiss();
+
+
+            }
+
+            @Override
+            public void onFailure(Call<String> call, Throwable t) {
+                Log.e("abc","lỗi ");
+                Toast.makeText(TrainingActivity.this, "Lỗi", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+
 
 
     @Override
@@ -190,9 +246,6 @@ public class TrainingActivity extends AppCompatActivity {
         arrBitMapImage= new ArrayList<Bitmap>();
         if (requestCode == 1 && resultCode == RESULT_OK) {
             mSelected = Matisse.obtainResult(data);
-           // paths = Matisse.obtainPathResult(data);
-
-          //  Log.d("Matisse", "mSelected: " + paths);
 
             for(int i=0;i<mSelected.size();i++) {
                 InputStream inputStream = null;
@@ -201,7 +254,7 @@ public class TrainingActivity extends AppCompatActivity {
                     Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
                     arrBitMapImage.add(bitmap);
 
-                   mfile= convertBitmapToFile(bitmap);
+
 
                 } catch (Exception e) {
                     e.printStackTrace();

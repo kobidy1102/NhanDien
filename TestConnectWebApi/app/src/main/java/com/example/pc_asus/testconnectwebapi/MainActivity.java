@@ -1,6 +1,7 @@
 package com.example.pc_asus.testconnectwebapi;
 
 import android.app.Activity;
+import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.ClipData;
 import android.content.Intent;
@@ -149,6 +150,10 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
+                final ProgressDialog dialog= new ProgressDialog(MainActivity.this);
+                dialog.setMessage("         please wait...");
+                dialog.show();
+
                 RequestBody requestBody= RequestBody.create(MediaType.parse("multipart/form-data"),f);
                 MultipartBody.Part body= MultipartBody.Part.createFormData("upload_image","/data/test.jpg",requestBody);
 
@@ -163,7 +168,8 @@ public class MainActivity extends AppCompatActivity {
                 call.enqueue(new Callback<String>() {
                     @Override
                     public void onResponse(Call<String> call, Response<String> response) {
-                        Toast.makeText(MainActivity.this,"result= "+ response.body(), Toast.LENGTH_SHORT).show();
+                        dialog.dismiss();
+                        Toast.makeText(MainActivity.this, response.body(), Toast.LENGTH_SHORT).show();
                         Log.e("abc","result="+response.body());
                     }
 

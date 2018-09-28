@@ -150,8 +150,8 @@ public class TrainingActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<String> call, Throwable t) {
-                Log.e("abc", "lỗi ");
-                Toast.makeText(TrainingActivity.this, "Lỗi", Toast.LENGTH_SHORT).show();
+                Log.e("abc", "lỗi add person");
+                Toast.makeText(TrainingActivity.this, "Lỗi add person", Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -175,7 +175,7 @@ public class TrainingActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<String> call, Response<String> response) {
 
-                Toast.makeText(TrainingActivity.this, response.body() + " "+i, Toast.LENGTH_SHORT).show();
+                Toast.makeText(TrainingActivity.this, response.body() + " "+(i+1), Toast.LENGTH_SHORT).show();
                 Log.e("abc", "result=" + response.body());
 
 
@@ -190,8 +190,8 @@ public class TrainingActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<String> call, Throwable t) {
-                Log.e("abc", "lỗi ");
-                Toast.makeText(TrainingActivity.this, "Lỗi", Toast.LENGTH_SHORT).show();
+                Log.e("abc", "lỗi add face ");
+                Toast.makeText(TrainingActivity.this, "Lỗi add face", Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -221,8 +221,8 @@ public class TrainingActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<String> call, Throwable t) {
-                Log.e("abc","lỗi ");
-                Toast.makeText(TrainingActivity.this, "Lỗi", Toast.LENGTH_SHORT).show();
+                Log.e("abc","lỗi training ");
+                Toast.makeText(TrainingActivity.this, "Lỗi training", Toast.LENGTH_SHORT).show();
                 dialog.dismiss();
             }
         });

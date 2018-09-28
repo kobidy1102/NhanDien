@@ -144,8 +144,17 @@ namespace router.Controllers
         }
 
 
+        [HttpPost, Route("api/createPersonGroup/{personGroup}/{personGroupName}")]
+        public async Task<String> createPersonGroup2(string personGroup, string personGroupName)
 
-     
+        {
+            string result = "w";
+            result = await CreatePersonGroup(personGroup, personGroupName);
+
+            return result;
+
+        }
+
 
 
 
@@ -155,17 +164,17 @@ namespace router.Controllers
         ////////
 
 
-        private async void CreatePersonGroup(String personGroupId, string personGroupName)
+        private async Task<string> CreatePersonGroup(string personGroupId, string personGroupName)
         {
             try
             {
                 await faceServiceClient.CreatePersonGroupAsync(personGroupId, personGroupName);
-                Console.WriteLine("Done " + personGroupName);
+                return "complete";
 
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Error Create Person Group\n" + ex.Message);
+                return "error";
             }
         }
 
@@ -234,7 +243,7 @@ namespace router.Controllers
                 {
                     if (identifyResult.Candidates.Length == 0)
                     {
-                        kq = kq+" Không nhận diện được \n";
+                        kq = kq+"Không nhận diện được \n";
                     }
                     else
                     {
@@ -243,7 +252,7 @@ namespace router.Controllers
                         rate = rate * 100;
 
                         var person = await faceServiceClient.GetPersonAsync(personGroupId, candidateId);
-                        kq = kq+ string.Format("{0}", person.Name + " - " + rate+"% \n ");
+                        kq = kq+ string.Format("{0}", person.Name + " - " + rate+"% \n");
                     }
                 }
             }

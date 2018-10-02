@@ -7,6 +7,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.Matrix;
+import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.Environment;
 import android.os.Handler;
@@ -69,6 +70,8 @@ public final class FaceTrackerActivity extends AppCompatActivity {
     private static final int RC_HANDLE_GMS = 9001;
     // permission request codes need to be < 256
     private static final int RC_HANDLE_CAMERA_PERM = 2;
+
+    boolean checkStartCamera=false;
 
     //==============================================================================================
     // Activity Methods
@@ -134,7 +137,9 @@ public final class FaceTrackerActivity extends AppCompatActivity {
                 .setClassificationType(FaceDetector.ALL_CLASSIFICATIONS)
                 .build();
 
-                detector.setProcessor(
+        final MyFaceDetector myFaceDetector = new MyFaceDetector(detector);
+
+        myFaceDetector.setProcessor(
                 new MultiProcessor.Builder<>(new MultiProcessor.Factory<Face>() {
                     @Override
                     public Tracker<Face> create(Face face) {
@@ -144,73 +149,89 @@ public final class FaceTrackerActivity extends AppCompatActivity {
                         if(newFaceId[0]!=faceId[0]) {
                             faceId[0]=newFaceId[0];
 
-                             final CameraSource.PictureCallback mPicture= new CameraSource.PictureCallback() {
-                                @Override
-                                public void onPictureTaken(byte[] bytes) {
 
-                                    try {
+                            byte[] bytes= MyFaceDetector.jpegArray;
+                            Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+                            bitmap = AppUtil.getResizedBitmap(bitmap, 350, 350);
 
-                                        Log.e("abc", "đã chụp");
-                                        Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-                                        bitmap = AppUtil.getResizedBitmap(bitmap, 200, 200);
+                       //     AppUtil.Exif.getOrientation(bytes);
 
-                                        AppUtil.Exif.getOrientation(bytes);
+                            int orientation = AppUtil.Exif.getOrientation(bytes);
+                            Log.e("abc","oriencation "+orientation);
+                            Bitmap bitmapPicture = bitmap;
+                            //   Bitmap   bitmap3 = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+                            switch (orientation) {
+                                case 90:
+                                    bitmapPicture = rotateImage(bitmap, 90);
 
-                                        int orientation = AppUtil.Exif.getOrientation(bytes);
-                                        Bitmap bitmapPicture = bitmap;
-                                        //   Bitmap   bitmap3 = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-                                        switch (orientation) {
-                                            case 90:
-                                                bitmapPicture = rotateImage(bitmap, 90);
+                                    break;
+                                case 180:
+                                    bitmapPicture = rotateImage(bitmap, 180);
 
-                                                break;
-                                            case 180:
-                                                bitmapPicture = rotateImage(bitmap, 180);
+                                    break;
+                                case 270:
+                                    bitmapPicture = rotateImage(bitmap, 270);
 
-                                                break;
-                                            case 270:
-                                                bitmapPicture = rotateImage(bitmap, 270);
+                                    break;
+                                case 0:
 
-                                                break;
-                                            case 0:
-                                                // if orientation is zero we don't need to rotate this
+                                default:
+                                    break;
+                            }
 
-                                            default:
-                                                break;
-                                        }
-                                        //write your code here to save bitmap
-
-
-                                        File f = convertBitmapToFile(bitmapPicture);
-                                        getDataApi(f);
-                                    }catch ( Exception e){Log.e("abc","lỗi pick hình"+e);}
-                                }
-                            };
-
-//                                new Handler().postDelayed(new Runnable() {
-//                                     @Override
-//                                     public void run() {
-                                mCameraSource.takePicture(null, mPicture);
-
-                                //     }
-                            //     }, 500);
-
-
-
-
-
-
-
-//                            runOnUiThread(new Runnable() {
+                            File f = convertBitmapToFile(bitmapPicture);
+                            getDataApi(f);
+                            Log.e("abc", "đã chụp");
+//                             final CameraSource.PictureCallback mPicture= new CameraSource.PictureCallback() {
 //                                @Override
-//                                public void run() {
-//                                    Toast.makeText(FaceTrackerActivity.this, "Phát hiện khuôn mặt mới", Toast.LENGTH_SHORT).show();
+//                                public void onPictureTaken(byte[] bytes) {
 //
-//                                   // takePicture();
+//                                    Log.e("abc", "đã chụp");
+//                                        Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+//                                        bitmap = AppUtil.getResizedBitmap(bitmap, 350, 350);
+//
+//                                        AppUtil.Exif.getOrientation(bytes);
+//
+//                                        int orientation = AppUtil.Exif.getOrientation(bytes);
+//                                        Bitmap bitmapPicture = bitmap;
+//                                        //   Bitmap   bitmap3 = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+//                                        switch (orientation) {
+//                                            case 90:
+//                                                bitmapPicture = rotateImage(bitmap, 90);
+//
+//                                                break;
+//                                            case 180:
+//                                                bitmapPicture = rotateImage(bitmap, 180);
+//
+//                                                break;
+//                                            case 270:
+//                                                bitmapPicture = rotateImage(bitmap, 270);
+//
+//                                                break;
+//                                            case 0:
+//
+//                                            default:
+//                                                break;
+//                                        }
+//
+//                                        File f = convertBitmapToFile(bitmapPicture);
+//                                        getDataApi(f);
 //
 //
+//
+//                                    checkStartCamera=true;
 //                                }
-//                            });
+//                            };
+//
+//                            if(checkStartCamera==true){
+//
+//                                mCameraSource.takePicture(null, mPicture);
+//
+//                                checkStartCamera=false;
+//
+//
+//                            }
+
                         }
                         return null;
                     }
@@ -220,7 +241,7 @@ public final class FaceTrackerActivity extends AppCompatActivity {
 
 
 
-        if (!detector.isOperational()) {
+        if (!myFaceDetector.isOperational()) {
             new AlertDialog.Builder(this)
                     .setMessage("Face detector dependencies are not yet available.")
                     .show();
@@ -229,7 +250,7 @@ public final class FaceTrackerActivity extends AppCompatActivity {
             return;
         }
 
-        mCameraSource = new CameraSource.Builder(context, detector)
+        mCameraSource = new CameraSource.Builder(context, myFaceDetector)
                 .setRequestedPreviewSize(1024, 720)
                 .setFacing(CameraSource.CAMERA_FACING_BACK)
                 .setRequestedFps(30.0f)
@@ -317,10 +338,12 @@ public final class FaceTrackerActivity extends AppCompatActivity {
         if (mCameraSource != null) {
             try {
                 mPreview.start(mCameraSource);
+                checkStartCamera=true;
             } catch (IOException e) {
                 Log.e(TAG, "Unable to start camera source.", e);
                 mCameraSource.release();
                 mCameraSource = null;
+                checkStartCamera=false;
             }
         }
     }
@@ -344,9 +367,9 @@ public final class FaceTrackerActivity extends AppCompatActivity {
 
 
     public void getDataApi(File f){
-        final ProgressDialog dialog= new ProgressDialog(FaceTrackerActivity.this);
-        dialog.setMessage("         please wait...");
-        dialog.show();
+//        final ProgressDialog dialog= new ProgressDialog(FaceTrackerActivity.this);
+    //    dialog.setMessage("         please wait...");
+     //   dialog.show();
 
         Log.e("abc",f.getAbsolutePath()+" "+f.length());
         RequestBody requestBody= RequestBody.create(MediaType.parse("multipart/form-data"),f);
@@ -363,7 +386,7 @@ public final class FaceTrackerActivity extends AppCompatActivity {
         call.enqueue(new Callback<String>() {
             @Override
             public void onResponse(Call<String> call, Response<String> response) {
-                dialog.dismiss();
+            //    dialog.dismiss();
                 Toast.makeText(FaceTrackerActivity.this, response.body(), Toast.LENGTH_SHORT).show();
                 Log.e("abc","result="+response.body());
             }
@@ -372,7 +395,7 @@ public final class FaceTrackerActivity extends AppCompatActivity {
             public void onFailure(Call<String> call, Throwable t) {
                 Log.e("abc","lỗi "+t);
                 Toast.makeText(FaceTrackerActivity.this, "Lỗi", Toast.LENGTH_SHORT).show();
-                dialog.dismiss();
+           //     dialog.dismiss();
             }
         });
     }
@@ -380,19 +403,7 @@ public final class FaceTrackerActivity extends AppCompatActivity {
 
 
 
-    public Uri getImageUri(Context inContext, Bitmap inImage) {
-        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-        inImage.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
-        String path = MediaStore.Images.Media.insertImage(inContext.getContentResolver(), inImage, "Title", null);
-        return Uri.parse(path);
-    }
 
-    public String getRealPathFromURI(Uri uri) {
-        Cursor cursor = getContentResolver().query(uri, null, null, null, null);
-        cursor.moveToFirst();
-        int idx = cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATA);
-        return cursor.getString(idx);
-    }
     
     public static Bitmap rotateImage(Bitmap source, float angle) {
         Matrix matrix = new Matrix();

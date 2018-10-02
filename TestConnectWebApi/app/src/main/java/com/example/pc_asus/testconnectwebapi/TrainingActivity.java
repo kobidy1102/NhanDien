@@ -145,7 +145,7 @@ public class TrainingActivity extends AppCompatActivity {
                 Toast.makeText(TrainingActivity.this, "Add person complete: "+response.body(), Toast.LENGTH_SHORT).show();
                 Log.e("abc", "result=" + response.body());
 
-                    addFaceToPerson(response.body());
+                    addFaceToPerson(response.body());                      ///////////////////
             }
 
             @Override
@@ -181,7 +181,7 @@ public class TrainingActivity extends AppCompatActivity {
 
                 i++;
                 if(i<arrBitMapImage.size()) {
-                    addFaceToPerson(personId);
+                    addFaceToPerson(personId);                              ///////////////////////////
                 }else{
                     trainingPerson();
                 }
@@ -240,21 +240,24 @@ public class TrainingActivity extends AppCompatActivity {
         if (requestCode == 1 && resultCode == RESULT_OK) {
             mSelected = Matisse.obtainResult(data);
 
-            for(int i=0;i<mSelected.size();i++) {
-                InputStream inputStream = null;
-                try {
-                    inputStream = TrainingActivity.this.getContentResolver().openInputStream(mSelected.get(i));
-                    Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
-                    arrBitMapImage.add(bitmap);
 
+            //path of photo that taken by camera
+            List<String> resultPaths;
 
+            resultPaths = Matisse.obtainPathResult(data);
+            if (resultPaths.size() > 0) {
+             //   filesToUpload.clear();
+             //   previewBitmaps.clear();
 
-                } catch (Exception e) {
-                    e.printStackTrace();
+             //   if (resultPaths.size() < 4) {
+            //        previewSize = previewSize * 2;
+            //    }
+                for (String path : resultPaths) {
+                    Bitmap photoBitmap = AppUtil.rotateImage(path, 500, 500);
+                    arrBitMapImage.add(photoBitmap);
                 }
-
-
             }
+
             Log.e("abc","size="+arrBitMapImage.size());
 
             initRecycleView();
@@ -294,4 +297,14 @@ public class TrainingActivity extends AppCompatActivity {
 
         return imageFile;
     }
+
+
+
+
+
+
+
+
+
+
 }

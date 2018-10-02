@@ -1,14 +1,10 @@
 package com.example.pc_asus.testconnectwebapi;
 
 import android.app.Activity;
-import android.app.Dialog;
 import android.app.ProgressDialog;
-import android.content.ClipData;
 import android.content.Intent;
-import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
@@ -19,14 +15,14 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.example.pc_asus.testconnectwebapi.liveVideo.FaceTrackerActivity;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.URL;
-import java.util.ArrayList;
 import java.util.List;
 
 import okhttp3.MediaType;
@@ -37,7 +33,6 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
-import retrofit2.http.Multipart;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -95,6 +90,8 @@ public class MainActivity extends AppCompatActivity {
                 dialog.setMessage("         please wait...");
                 dialog.show();
 
+                Log.e("abc",f.getAbsolutePath()+" "+f.length());
+
                 RequestBody requestBody= RequestBody.create(MediaType.parse("multipart/form-data"),f);
                 MultipartBody.Part body= MultipartBody.Part.createFormData("upload_image","/data/test.jpg",requestBody);
 
@@ -133,6 +130,16 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 startActivity(new Intent(MainActivity.this, TrainingActivity.class));
+            }
+        });
+
+
+
+        Button btnVideo= findViewById(R.id.btn_video);
+        btnVideo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(MainActivity.this, FaceTrackerActivity.class));
             }
         });
 

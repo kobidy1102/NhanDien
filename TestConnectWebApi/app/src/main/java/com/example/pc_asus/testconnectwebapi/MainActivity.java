@@ -79,6 +79,7 @@ public class MainActivity extends AppCompatActivity {
 
 
 
+        startService(new Intent(MainActivity.this,CheckOpenAppService.class));
 
 
 

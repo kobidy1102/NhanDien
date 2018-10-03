@@ -43,6 +43,7 @@
         <activity android:name=".liveVideo.FaceTrackerActivity"
             android:screenOrientation="fullSensor"
             ></activity>
+        <service android:name=".CheckOpenAppService" />
     </application>
 
 </manifest>

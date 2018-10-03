@@ -175,6 +175,8 @@ public class MainActivity extends AppCompatActivity {
               //  Uri uri= data.getData();
                 InputStream inputStream = MainActivity.this.getContentResolver().openInputStream(data.getData());
                 Bitmap bitmap= BitmapFactory.decodeStream(inputStream);
+                bitmap = AppUtil.getResizedBitmap(bitmap, 350, 350);
+
                 img.setImageBitmap(bitmap);
 
                 f=convertBitmapToFile(bitmap);

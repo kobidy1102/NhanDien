@@ -1,0 +1,104 @@
+{
+  "project_info": {
+    "project_number": "322722710973",
+    "firebase_url": "https://testlogin-1534847497894.firebaseio.com",
+    "project_id": "testlogin-1534847497894",
+    "storage_bucket": "testlogin-1534847497894.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:322722710973:android:c49f546859962685",
+        "android_client_info": {
+          "package_name": "com.example.pc_asus.loginwithfacebook"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "322722710973-87q5kel6q67kat5ehg6q5pihmum73gs0.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA0sixgkQMtonAlxplMu-IG-cV28eHmr_o"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:322722710973:android:143d00722a81866f",
+        "android_client_info": {
+          "package_name": "com.example.pc_asus.testobjectrecognition"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "322722710973-87q5kel6q67kat5ehg6q5pihmum73gs0.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA0sixgkQMtonAlxplMu-IG-cV28eHmr_o"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:322722710973:android:e0fab707a198d439",
+        "android_client_info": {
+          "package_name": "com.google.firebase.samples.apps.mlkit.java.facedetection"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "322722710973-87q5kel6q67kat5ehg6q5pihmum73gs0.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA0sixgkQMtonAlxplMu-IG-cV28eHmr_o"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

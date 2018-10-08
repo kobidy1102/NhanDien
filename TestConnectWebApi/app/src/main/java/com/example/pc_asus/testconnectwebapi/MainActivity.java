@@ -7,6 +7,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.provider.MediaStore;
+import android.provider.Settings;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -81,7 +82,10 @@ public class MainActivity extends AppCompatActivity {
 
         startService(new Intent(MainActivity.this,CheckOpenAppService.class));
 
+        String android_id = Settings.Secure.getString(this.getContentResolver(),
+                Settings.Secure.ANDROID_ID);
 
+        Toast.makeText(this, ""+android_id, Toast.LENGTH_SHORT).show();
 
         btn_send.setOnClickListener(new View.OnClickListener() {
             @Override
